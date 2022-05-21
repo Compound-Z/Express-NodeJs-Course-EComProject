@@ -3,6 +3,9 @@ require('express-async-errors') //to automatically apply try-catch to any async 
 const express = require('express')
 const app = express()
 
+//morgan: http request logger
+const morgan = require('morgan')
+
 //db
 const connectDB = require('./db/connect')
 
@@ -12,7 +15,8 @@ const errorHandlerMiddleware = require('./middleware/error-handler')
 //routes
 const routerAuth = require('./routers/authRoutes')
 
-//************************************** */
+//************************************** */	
+app.use(morgan('tiny'))
 app.use(express.json())
 app.use('/', routerAuth)
 
