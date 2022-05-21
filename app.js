@@ -18,7 +18,7 @@ const routerAuth = require('./routers/authRoutes')
 //************************************** */	
 app.use(morgan('tiny'))
 app.use(express.json())
-app.use('/', routerAuth)
+app.use('/api/v1/auth', routerAuth)
 
 app.use(notFound)
 app.use(errorHandlerMiddleware)
