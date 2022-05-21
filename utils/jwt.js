@@ -8,4 +8,18 @@ const verifyJWT = (token) => {
 	return jwt.verify(token, process.env.JWT_SECRET)
 }
 
-module.exports = { createJWT, verifyJWT }
+const attachCookieToResponse = ({ res, tokenUser }) => {
+	const token = createJWT({ payload: tokenUser })
+
+	//send token using cookie
+	const oneDayInMilisecond = 1000 * 60 * 60 * 24
+	res.cookie('token', token,
+		{
+			httpOnly: true,
+			expires: new Date(Date.now() + oneDayInMilisecond),
+			secure: process.env.NODE_ENV === 'production',
+			signed: true,
+		})
+}
+
+module.exports = { createJWT, verifyJWT, attachCookieToResponse }

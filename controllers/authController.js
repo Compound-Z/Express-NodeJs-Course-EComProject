@@ -2,7 +2,7 @@ const res = require("express/lib/response")
 const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
 const CustomeError = require('../errors')
-const { createJWT } = require('../utils')
+const { attachCookieToResponse } = require('../utils')
 const register = async (req, res) => {
 	const { name, email, password } = req.body
 
@@ -23,14 +23,17 @@ const register = async (req, res) => {
 		name: user.name,
 		role: user.role
 	}
-	const token = createJWT({ payload: tokenUser })
+	attachCookieToResponse({ res, tokenUser })
 
 	//response
-	res.status(StatusCodes.CREATED).json({ user: tokenUser, token: token })
+	res.status(StatusCodes.CREATED).json({ user: tokenUser })
 }
 
 const login = async (req, res) => {
-	res.send('login')
+	//check email and password
+	//check if user exist
+	//compare password
+	//create cookie and send back
 }
 
 

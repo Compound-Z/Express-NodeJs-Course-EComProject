@@ -1,5 +1,6 @@
 require('dotenv').config();
 require('express-async-errors') //to automatically apply try-catch to any async function
+const cookieParser = require('cookie-parser')
 const express = require('express')
 const app = express()
 
@@ -18,6 +19,13 @@ const routerAuth = require('./routers/authRoutes')
 //************************************** */	
 app.use(morgan('tiny'))
 app.use(express.json())
+app.use(cookieParser(process.env.JWT_SECRET))
+
+app.get('/', (req, res) => {
+	console.log(req.cookies)
+	res.send('OKE')
+})
+
 app.use('/api/v1/auth', routerAuth)
 
 app.use(notFound)
