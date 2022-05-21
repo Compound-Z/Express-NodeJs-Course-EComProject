@@ -1,7 +1,7 @@
 const res = require("express/lib/response")
 const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
-const CustomeError = require('../errors')
+const CustomError = require('../errors')
 const { attachCookieToResponse } = require('../utils')
 const register = async (req, res) => {
 	const { name, email, password } = req.body
@@ -31,14 +31,38 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
 	//check email and password
+	const { email, password } = req.body
+	console.log(req)
+	if (!email || !password) {
+		throw new CustomError.BadRequestError('Please provide email and password')
+	}
 	//check if user exist
+	const user = await User.findOne({ email: email })
+	if (!user) {
+		throw new CustomError.UnauthenticatedError('This email does not exist')
+	}
 	//compare password
+	const isPasswordValid = user.comparePassword(password)
+	if (!isPasswordValid) {
+		throw new CustomError.UnauthenticatedError('Wrong password')
+	}
 	//create cookie and send back
+	const tokenUser = {
+		id: user._id,
+		name: user.name,
+		role: user.role
+	}
+	attachCookieToResponse({ res, tokenUser })
+	res.status(StatusCodes.OK).json({ tokenUser })
 }
 
 
 const logout = async (req, res) => {
-	res.send('logout')
+	res.cookie('token', 'logout', {
+		httpOnly: true,
+		expires: new Date(Date.now() + 5000)
+	})
+	res.status(StatusCodes.OK).send('logged out')
 }
 
 module.exports = { login, register, logout }
