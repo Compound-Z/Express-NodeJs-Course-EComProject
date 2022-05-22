@@ -15,6 +15,7 @@ const notFound = require('./middleware/not-found')
 const errorHandlerMiddleware = require('./middleware/error-handler')
 //routes
 const routerAuth = require('./routers/authRoutes')
+const routerUser = require('./routers/userRoutes')
 
 //************************************** */	
 app.use(morgan('tiny'))
@@ -27,6 +28,8 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', routerAuth)
+app.use('/api/v1/users', routerUser)
+
 
 app.use(notFound)
 app.use(errorHandlerMiddleware)
