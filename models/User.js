@@ -31,10 +31,12 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.pre('save', async function () {
 	const salt = await bcryptjs.genSalt(10)
+	console.log("password:", this.password)
 	this.password = await bcryptjs.hash(this.password, salt)
 })
 
 UserSchema.methods.comparePassword = async function (candidatePassword) {
+	console.log(`candidate ${candidatePassword}`)
 	const isMatched = await bcryptjs.compare(candidatePassword, this.password)
 	return isMatched
 }

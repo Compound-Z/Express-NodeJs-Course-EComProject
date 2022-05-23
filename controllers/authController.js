@@ -2,7 +2,7 @@ const res = require("express/lib/response")
 const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
-const { attachCookieToResponse } = require('../utils')
+const { attachCookieToResponse, createTokenUser } = require('../utils')
 const register = async (req, res) => {
 	const { name, email, password } = req.body
 
@@ -18,11 +18,7 @@ const register = async (req, res) => {
 
 	const user = await User.create({ name, email, password, role })
 
-	const tokenUser = {
-		id: user._id,
-		name: user.name,
-		role: user.role
-	}
+	const tokenUser = createTokenUser(user)
 	attachCookieToResponse({ res, tokenUser })
 
 	//response
@@ -31,8 +27,8 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
 	//check email and password
+	console.log(req.body.password)
 	const { email, password } = req.body
-	console.log(req)
 	if (!email || !password) {
 		throw new CustomError.BadRequestError('Please provide email and password')
 	}
@@ -42,16 +38,13 @@ const login = async (req, res) => {
 		throw new CustomError.UnauthenticatedError('This email does not exist')
 	}
 	//compare password
-	const isPasswordValid = user.comparePassword(password)
+	const isPasswordValid = await user.comparePassword(password)
+	console.log(`isPwdValid ${isPasswordValid}`)
 	if (!isPasswordValid) {
 		throw new CustomError.UnauthenticatedError('Wrong password')
 	}
 	//create cookie and send back
-	const tokenUser = {
-		id: user._id,
-		name: user.name,
-		role: user.role
-	}
+	const tokenUser = createTokenUser(user)
 	attachCookieToResponse({ res, tokenUser })
 	res.status(StatusCodes.OK).json({ tokenUser })
 }

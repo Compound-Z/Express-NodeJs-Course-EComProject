@@ -14,7 +14,7 @@ const authenticateUser = async (req, res, next) => {
 		req.user = { id, name, role }
 		next()
 	} catch (error) {
-		console.log(error)
+		throw new CustomError.UnauthenticatedError('Authentication Invalid');
 	}
 }
 
