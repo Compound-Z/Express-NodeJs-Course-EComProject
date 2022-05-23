@@ -10,9 +10,10 @@ const morgan = require('morgan')
 //db
 const connectDB = require('./db/connect')
 
-//not found
+//middleware
 const notFound = require('./middleware/not-found')
 const errorHandlerMiddleware = require('./middleware/error-handler')
+const authentication = require('./middleware/authentication')
 //routes
 const routerAuth = require('./routers/authRoutes')
 const routerUser = require('./routers/userRoutes')
@@ -28,7 +29,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', routerAuth)
-app.use('/api/v1/users', routerUser)
+app.use('/api/v1/users', authentication.authenticateUser, authentication.authorizeUserPermission('admin'), routerUser)
 
 
 app.use(notFound)

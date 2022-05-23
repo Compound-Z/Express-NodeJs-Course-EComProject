@@ -1,17 +1,31 @@
 const CustomError = require('../errors');
-const jwt = require('jsonwebtoken')
+const jwt = require('../utils/jwt')
 
 const authenticateUser = async (req, res, next) => {
-	const token = req.token
+	const token = req.signedCookies.token
 	if (!token) {
-		throw new CustomError.BadRequestError('Please provide token')
+		throw new CustomError.BadRequestError('Authentication invalid')
+	} else {
+		console.log(token)
 	}
 
 	try {
-		const { id, name, role } = jwt.verify(token, process.env.JWT_SECRET)
+		const { id, name, role } = jwt.verifyJWT(token)
 		req.user = { id, name, role }
 		next()
 	} catch (error) {
-
+		console.log(error)
 	}
 }
+
+const authorizeUserPermission = (...roles) => {
+	return async (req, res, next) => {
+		if (!(roles.includes(req.user.role))) {
+			throw new CustomError.UnauthorizedError('Permission denied!')
+		} else {
+			next()
+		}
+	}
+}
+
+module.exports = { authenticateUser, authorizeUserPermission }
