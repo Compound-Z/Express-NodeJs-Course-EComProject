@@ -7,6 +7,15 @@ const app = express()
 //morgan: http request logger
 const morgan = require('morgan')
 
+//express file upload
+const expressFile = require('express-fileupload')
+//cloudinary
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+	cloud_name: process.env.CLOUD_NAME,
+	api_key: process.env.CLOUD_API_KEY,
+	api_secret: process.env.CLOUD_API_SECRET,
+});
 //db
 const connectDB = require('./db/connect')
 
@@ -22,6 +31,7 @@ const routerProduct = require('./routers/productRoutes')
 //************************************** */	
 app.use(morgan('tiny'))
 app.use(express.json())
+app.use(expressFile({ useTempFiles: true }))
 app.use(cookieParser(process.env.JWT_SECRET))
 
 app.get('/', (req, res) => {
