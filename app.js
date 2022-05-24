@@ -27,7 +27,7 @@ const errorHandlerMiddleware = require('./middleware/error-handler')
 const routerAuth = require('./routers/authRoutes')
 const routerUser = require('./routers/userRoutes')
 const routerProduct = require('./routers/productRoutes')
-
+const routerReview = require('./routers/reviewRoutes')
 //************************************** */	
 app.use(morgan('tiny'))
 app.use(express.json())
@@ -42,6 +42,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/auth', routerAuth)
 app.use('/api/v1/users', routerUser)
 app.use('/api/v1/products', routerProduct)
+app.use('/api/v1/reviews', routerReview)
 
 
 app.use(notFound)
